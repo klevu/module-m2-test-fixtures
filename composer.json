@@ -1,0 +1,37 @@
+{
+    "name": "klevu/module-m2-test-fixtures",
+    "description": "Add custom test fixtures",
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "require": {
+        "php": "~8.1|~8.2",
+        "klevu/magento2-fixtures-fork": "^1.1.3",
+        "magento/framework": "^103.0.4",
+        "magento/module-catalog": "*",
+        "magento/module-catalog-inventory": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-eav": "*",
+        "magento/module-indexer": "*",
+        "magento/module-sales-sequence": "*",
+        "magento/module-store": "^101.1.4",
+        "magento/module-user": "^101.2.4"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Klevu\\TestFixtures\\": ""
+        }
+    },
+    "license": [
+        "MIT"
+    ],
+    "authors": [
+        {
+            "name": "Klevu Oy",
+            "email": "niraj.aswani@klevu.com",
+            "homepage": "https://www.klevu.com/"
+        }
+    ]
+}
