@@ -29,7 +29,7 @@ trait CartTrait
      *       'SKU002' => [
      *         'qty' => 1,
      *         'options' => [
-     *           'configurable_attribute_code' => 'optionLabel', // the selected configurable option label
+     *           'configurable_attribute_code' => 12345, // 'sku' => 'optionId'
      *          ],
      *        ],
      *     ],

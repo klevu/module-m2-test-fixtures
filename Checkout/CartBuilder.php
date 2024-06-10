@@ -329,7 +329,7 @@ class CartBuilder
         /** @var Configurable $typeInstance */
         $typeInstance = $product->getTypeInstance();
         $configurableAttributes = $typeInstance->getConfigurableAttributesAsArray($product);
-        foreach ($requestOptions as $attributeCode => $value) {
+        foreach ($requestOptions as $attributeCode => $optionId) {
             /** @var Attribute $configurableAttribute */
             $configurableAttribute = current(array_filter(
                 $configurableAttributes,
@@ -338,13 +338,7 @@ class CartBuilder
             if (!$configurableAttribute) {
                 continue;
             }
-            $option = array_filter(
-                $configurableAttribute['options'],
-                static fn (array $option): bool => $option['label'] === $value,
-            );
-            $key = array_key_first($option);
-            $value = $configurableAttribute['values'][$key];
-            $superAttribute[$configurableAttribute['attribute_id']] = $value['value_index'];
+            $superAttribute[$configurableAttribute['attribute_id']] = $optionId;
         }
         $requestInfo->setData('super_attribute', $superAttribute);
 
