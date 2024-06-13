@@ -15,6 +15,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\Writer as ConfigWriter;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
 trait SetAuthKeysTrait
@@ -24,6 +25,7 @@ trait SetAuthKeysTrait
      * @param string|null $jsApiKey
      * @param string|null $restAuthKey
      * @param bool $removeApiKeys
+     * @param bool|null $singleStoreMode
      *
      * @return void
      */
@@ -32,6 +34,7 @@ trait SetAuthKeysTrait
         ?string $jsApiKey = null,
         ?string $restAuthKey = null,
         bool $removeApiKeys = true,
+        ?bool $singleStoreMode = false,
     ): void {
         if (!(($this->objectManager ?? null) instanceof ObjectManagerInterface)) {
             throw new \LogicException('Cannot instantiate test object: objectManager property not defined');
@@ -39,6 +42,7 @@ trait SetAuthKeysTrait
         if ($removeApiKeys) {
             $this->removeAuthKeys();
         }
+
         $scope = $scopeProvider->getCurrentScope();
         /** @var ConfigWriter $configWriter */
         $configWriter = $this->objectManager->get(ConfigWriter::class);
@@ -46,16 +50,24 @@ trait SetAuthKeysTrait
             $configWriter->save(
                 path: ApiKeyProvider::CONFIG_XML_PATH_JS_API_KEY,
                 value: $jsApiKey,
-                scope: $scope->getScopeType(),
-                scopeId: $scope?->getScopeId() ?? 0,
+                scope: $singleStoreMode
+                    ? ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+                    : $scope->getScopeType(),
+                scopeId: $singleStoreMode
+                    ? Store::DEFAULT_STORE_ID
+                    : $scope?->getScopeId() ?? Store::DEFAULT_STORE_ID,
             );
         }
         if (null !== $restAuthKey) {
             $configWriter->save(
                 path: AuthKeyProvider::CONFIG_XML_PATH_REST_AUTH_KEY,
                 value: $restAuthKey,
-                scope: $scope->getScopeType(),
-                scopeId: $scope?->getScopeId() ?? 0,
+                scope: $singleStoreMode
+                    ? ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+                    : $scope->getScopeType(),
+                scopeId: $singleStoreMode
+                    ? Store::DEFAULT_STORE_ID
+                    : $scope?->getScopeId() ?? Store::DEFAULT_STORE_ID,
             );
         }
         $this->clearConfigCache();
