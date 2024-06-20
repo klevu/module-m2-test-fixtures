@@ -80,6 +80,9 @@ trait ObjectInstantiationTrait
         if (!(($this->objectManager ?? null) instanceof ObjectManagerInterface)) {
             throw new \LogicException('Cannot instantiate test object: objectManager property not defined');
         }
+        if (null === $arguments) {
+            $arguments = $this->constructorArgumentDefaults;
+        }
 
         return (null === $arguments)
             ? $this->objectManager->get($this->implementationFqcn)
