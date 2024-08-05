@@ -10,6 +10,7 @@ namespace Klevu\TestFixtures\Catalog;
 
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductWebsiteLinkInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\ProductWebsiteLinkRepositoryInterface;
@@ -443,6 +444,7 @@ class ConfigurableProductBuilder extends ProductBuilder
             downloadLinkRepository: $objectManager->create(DownloadableLinkRepositoryInterface::class),
             downloadLinkFactory: $objectManager->create(DownloadableLinkInterfaceFactory::class),
             domainManager: $objectManager->create(DomainManagerInterface::class),
+            tierPriceFactory: $objectManager->create(ProductTierPriceInterfaceFactory::class),
             product: $product,
             websiteIds: [1],
             storeSpecificValues: [],

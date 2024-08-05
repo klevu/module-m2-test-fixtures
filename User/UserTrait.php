@@ -9,6 +9,9 @@ declare(strict_types=1);
 namespace Klevu\TestFixtures\User;
 
 use Klevu\TestFixtures\Exception\FixturePoolMissingException;
+use Magento\Backend\Model\Auth\Session as AdminSession;
+use Magento\User\Api\Data\UserInterface;
+use Magento\User\Model\Authorization\AdminSessionUserContext;
 
 trait UserTrait
 {
@@ -50,6 +53,36 @@ trait UserTrait
         $this->userFixturesPool->add(
             $userBuilder->build(),
             $storeData['key'] ?? 'test_user',
+        );
+    }
+
+    /**
+     * May require "@magentoAppIsolation enabled" if calling multiple times in the same test class
+     *
+     * @param UserInterface $user
+     *
+     * @return void
+     */
+    private function loginUser(UserInterface $user): void
+    {
+        $mockAdminSessionBuilder = $this->getMockBuilder(AdminSession::class);
+        $mockAdminSessionBuilder->addMethods(['getUser', 'hasUser']);
+        $mockAdminSession = $mockAdminSessionBuilder->disableOriginalConstructor()
+            ->getMock();
+        $mockAdminSession->method('hasUser')
+            ->willReturn(true);
+        $mockAdminSession->method('getUser')
+            ->willReturn($user);
+
+        $userContext = $this->objectManager->create(
+            type: AdminSessionUserContext::class,
+            arguments: [
+                'adminSession' => $mockAdminSession,
+            ],
+        );
+        $this->objectManager->addSharedInstance(
+            instance: $userContext,
+            className: AdminSessionUserContext::class,
         );
     }
 }
