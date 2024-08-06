@@ -33,7 +33,7 @@ class StoreGroupFixturesPool
     }
 
     /**
-     * Returns store fixture by key, or last added if key not specified
+     * Returns store group fixture by key, or last added if key not specified
      *
      * @param string|null $key
      *
@@ -45,7 +45,7 @@ class StoreGroupFixturesPool
             $key = array_key_last($this->storeGroupFixtures);
         }
         if ($key === null || !array_key_exists($key, $this->storeGroupFixtures)) {
-            throw new \OutOfBoundsException('No matching store found in fixture pool');
+            throw new \OutOfBoundsException('No matching store group found in fixture pool');
         }
 
         return $this->storeGroupFixtures[$key];

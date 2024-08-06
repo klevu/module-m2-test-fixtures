@@ -77,6 +77,12 @@ trait ProductTrait
         if (isset($productData['price'])) {
             $productBuilder = $productBuilder->withPrice($productData['price']);
         }
+        if (isset($productData['tier_prices'])) {
+            /**
+             * $productData['tier_prices']['price' => 10.00, 'qty' => 1, 'customer_group' => 2]
+             */
+            $productBuilder = $productBuilder->withTierPrices($productData['tier_prices']);
+        }
         if (isset($productData['tax_class_id'])) {
             $productBuilder = $productBuilder->withTaxClassId($productData['tax_class_id']);
         }

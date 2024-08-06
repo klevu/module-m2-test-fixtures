@@ -10,6 +10,7 @@ namespace Klevu\TestFixtures\Catalog\Product;
 
 use Magento\Catalog\Api\Data\ProductExtensionInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductWebsiteLinkInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\ProductWebsiteLinkRepositoryInterface;
@@ -61,7 +62,11 @@ class ConfigurableProductBuilder extends ProductBuilder
      * @param ProductWebsiteLinkRepositoryInterface $websiteLinkRepository
      * @param ProductWebsiteLinkInterfaceFactory $websiteLinkFactory
      * @param IndexerFactory $indexerFactory
+     * @param DownloadableLinkRepositoryInterface $downloadLinkRepository
+     * @param DownloadableLinkInterfaceFactory $downloadLinkFactory
+     * @param DomainManagerInterface $domainManager
      * @param ConfigurableOptionsFactory $configurableOptionsFactory
+     * @param ProductTierPriceInterfaceFactory $tierPriceFactory
      * @param Product $product
      * @param int[] $websiteIds
      * @param mixed[] $storeSpecificValues
@@ -76,6 +81,7 @@ class ConfigurableProductBuilder extends ProductBuilder
         DownloadableLinkInterfaceFactory $downloadLinkFactory,
         DomainManagerInterface $domainManager,
         ConfigurableOptionsFactory $configurableOptionsFactory,
+        ProductTierPriceInterfaceFactory $tierPriceFactory,
         Product $product,
         array $websiteIds,
         array $storeSpecificValues,
@@ -89,6 +95,7 @@ class ConfigurableProductBuilder extends ProductBuilder
             downloadLinkRepository: $downloadLinkRepository,
             downloadLinkFactory: $downloadLinkFactory,
             domainManager: $domainManager,
+            tierPriceFactory: $tierPriceFactory,
             product: $product,
             websiteIds: $websiteIds,
             storeSpecificValues: $storeSpecificValues,
@@ -143,6 +150,7 @@ class ConfigurableProductBuilder extends ProductBuilder
             $objectManager->create(DownloadableLinkInterfaceFactory::class),
             $objectManager->create(DomainManagerInterface::class),
             $objectManager->create(ConfigurableOptionsFactory::class),
+            $objectManager->create(ProductTierPriceInterfaceFactory::class),
             $product,
             [1],
             [],
