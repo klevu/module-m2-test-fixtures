@@ -10,11 +10,14 @@ namespace Klevu\TestFixtures\Catalog;
 
 use Klevu\TestFixtures\Catalog\Attribute\AttributeBuilder;
 use Klevu\TestFixtures\Catalog\Attribute\AttributeFixturePool;
+use Klevu\TestFixtures\Traits\AttributeApiCallTrait;
 use Magento\Catalog\Api\Data\CategoryAttributeInterface;
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 
 trait AttributeTrait
 {
+    use AttributeApiCallTrait;
+
     /**
      * @var AttributeFixturePool|null
      */
@@ -28,6 +31,10 @@ trait AttributeTrait
      */
     public function createAttribute(?array $attributeData = []): void
     {
+        if (!($attributeData['trigger_real_api'] ?? null)) {
+            $this->mockSdkAttributeGetApiCall();
+        }
+
         if (!($attributeData['attribute_type'] ?? null)) {
             $attributeData['attribute_type'] = 'text';
         }
@@ -46,6 +53,7 @@ trait AttributeTrait
                 default => AttributeBuilder::aProductAttribute(
                     attributeCode: $attributeData['code'],
                     attributeType: $attributeData['attribute_type'],
+                    attributeData: $attributeData,
                 ),
             };
         }
@@ -88,6 +96,10 @@ trait AttributeTrait
 
         if ($attributeData['aspect'] ?? null) {
             $attributeBuilder = $attributeBuilder->withAspect($attributeData['aspect']);
+        }
+
+        if ($attributeData['generate_config_for'] ?? null) {
+            $attributeBuilder = $attributeBuilder->withGenerateConfigFor($attributeData['generate_config_for']);
         }
 
         $attributeBuilder = $attributeBuilder->withEntityType(

@@ -143,31 +143,40 @@ class AttributeBuilder
     /**
      * @param string $attributeCode
      * @param string|null $attributeType
+     * @param mixed[] $attributeData
      *
      * @return AttributeBuilder
      */
-    public static function aProductAttribute(string $attributeCode, ?string $attributeType = null): AttributeBuilder
-    {
+    public static function aProductAttribute(
+        string $attributeCode,
+        ?string $attributeType = null,
+        array $attributeData = [],
+    ): AttributeBuilder {
         $objectManager = Bootstrap::getObjectManager();
         /** @var Attribute $attribute */
         $attribute = $objectManager->create(ProductAttributeInterface::class);
 
+        $defaultAttributeData = [
+            'is_unique' => 0,
+            'is_required' => 0,
+            'is_searchable' => 0,
+            'is_visible_in_advanced_search' => 0,
+            'is_comparable' => 0,
+            'is_filterable' => 0,
+            'is_filterable_in_search' => 0,
+            'is_used_for_promo_rules' => 0,
+            'is_html_allowed_on_front' => 0,
+            'is_visible_on_front' => 0,
+            'used_in_product_listing' => 0,
+            'used_for_sort_by' => 0,
+            'is_global' => 0,
+        ];
+        $attributeData = array_intersect_key($attributeData, $defaultAttributeData);
+
         $attribute->addData(
             array_merge(
-                [
-                    'is_unique' => 0,
-                    'is_required' => 0,
-                    'is_searchable' => 0,
-                    'is_visible_in_advanced_search' => 0,
-                    'is_comparable' => 0,
-                    'is_filterable' => 0,
-                    'is_filterable_in_search' => 0,
-                    'is_used_for_promo_rules' => 0,
-                    'is_html_allowed_on_front' => 0,
-                    'is_visible_on_front' => 0,
-                    'used_in_product_listing' => 0,
-                    'used_for_sort_by' => 0,
-                ],
+                $defaultAttributeData,
+                $attributeData,
             ),
         );
 
@@ -184,32 +193,41 @@ class AttributeBuilder
 
     /**
      * @param string $attributeCode
-     * @param string|null $type
+     * @param string|null $attributeType
+     * @param mixed[] $attributeData
      *
      * @return AttributeBuilder
      */
-    public static function aCategoryAttribute(string $attributeCode, ?string $attributeType = null): AttributeBuilder
-    {
+    public static function aCategoryAttribute(
+        string $attributeCode,
+        ?string $attributeType = null,
+        array $attributeData = [],
+    ): AttributeBuilder {
         $objectManager = Bootstrap::getObjectManager();
         /** @var Attribute $attribute */
         $attribute = $objectManager->create(CategoryAttributeInterface::class);
 
+        $defaultAttributeData = [
+            'is_unique' => 0,
+            'is_required' => 0,
+            'is_searchable' => 0,
+            'is_visible_in_advanced_search' => 0,
+            'is_comparable' => 0,
+            'is_filterable' => 0,
+            'is_filterable_in_search' => 0,
+            'is_used_for_promo_rules' => 0,
+            'is_html_allowed_on_front' => 0,
+            'is_visible_on_front' => 0,
+            'used_in_product_listing' => 0,
+            'used_for_sort_by' => 0,
+            'is_global' => 0,
+        ];
+        $attributeData = array_intersect_key($attributeData, $defaultAttributeData);
+
         $attribute->addData(
             array_merge(
-                [
-                    'is_unique' => 0,
-                    'is_required' => 0,
-                    'is_searchable' => 0,
-                    'is_visible_in_advanced_search' => 0,
-                    'is_comparable' => 0,
-                    'is_filterable' => 0,
-                    'is_filterable_in_search' => 0,
-                    'is_used_for_promo_rules' => 0,
-                    'is_html_allowed_on_front' => 0,
-                    'is_visible_on_front' => 0,
-                    'used_in_product_listing' => 0,
-                    'used_for_sort_by' => 0,
-                ],
+                $defaultAttributeData,
+                $attributeData,
             ),
         );
 
@@ -333,10 +351,31 @@ class AttributeBuilder
         return $builder;
     }
 
+    /**
+     * @param string $entityType
+     *
+     * @return $this
+     */
     public function withEntityType(string $entityType): AttributeBuilder
     {
         $builder = clone $this;
         $builder->attribute = $builder->attribute->setData('entity_type', $entityType);
+
+        return $builder;
+    }
+
+    /**
+     * @param string[] $entitySubtypes
+     *
+     * @return AttributeBuilder
+     */
+    public function withGenerateConfigFor(array $entitySubtypes): AttributeBuilder
+    {
+        $builder = clone $this;
+        $builder->attribute = $builder->attribute->setData(
+            MagentoAttributeInterface::ATTRIBUTE_PROPERTY_GENERATE_CONFIGURATION_FOR_ENTITY_SUBTYPES,
+            $entitySubtypes,
+        );
 
         return $builder;
     }
@@ -421,6 +460,10 @@ class AttributeBuilder
             case ('date'):
                 $builder->attribute->setFrontendInput('date');
                 $builder->attribute->setBackendType('datetime');
+                break;
+            case ('enum'):
+                $builder->attribute->setFrontendInput('select');
+                $builder->attribute->setBackendType('int');
                 break;
             case ('select'):
                 $builder->attribute->setFrontendInput('select');

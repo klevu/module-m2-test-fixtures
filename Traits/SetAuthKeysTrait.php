@@ -11,6 +11,7 @@ namespace Klevu\TestFixtures\Traits;
 use Klevu\Configuration\Service\Provider\ApiKeyProvider;
 use Klevu\Configuration\Service\Provider\AuthKeyProvider;
 use Klevu\Configuration\Service\Provider\ScopeProviderInterface;
+use Klevu\Configuration\Service\Provider\Stores\Config\OldAuthKeysCollectionProvider;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\Writer as ConfigWriter;
 use Magento\Framework\ObjectManagerInterface;
@@ -110,6 +111,95 @@ trait SetAuthKeysTrait
             );
         }
         $this->clearConfigCache();
+    }
+
+    /**
+     * @param ScopeProviderInterface $scopeProvider
+     * @param string|null $jsApiKey
+     * @param string|null $restAuthKey
+     * @param bool $removeApiKeys
+     * @param bool $singleStoreMode
+     *
+     * @return void
+     */
+    private function setOldAuthKeys(
+        ScopeProviderInterface $scopeProvider,
+        ?string $jsApiKey = null,
+        ?string $restAuthKey = null,
+        bool $removeApiKeys = true,
+        bool $singleStoreMode = false,
+    ): void {
+        /** @var ConfigWriter $configWriter */
+        $configWriter = $this->objectManager->get(ConfigWriter::class);
+        if ($removeApiKeys) {
+            $this->removeOldAuthKeys();
+        }
+        $scope = $scopeProvider->getCurrentScope();
+        if (null !== $jsApiKey) {
+            $configWriter->save(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_JS_API_KEY,
+                value: $jsApiKey,
+                scope: $singleStoreMode
+                    ? ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+                    : $scope->getScopeType(),
+                scopeId: $singleStoreMode
+                    ? Store::DEFAULT_STORE_ID
+                    : $scope?->getScopeId() ?? Store::DEFAULT_STORE_ID,
+            );
+        }
+        if (null !== $restAuthKey) {
+            $configWriter->save(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                    . '/' . OldAuthKeysCollectionProvider::XML_FIELD_REST_API_KEY,
+                value: $restAuthKey,
+                scope: $singleStoreMode
+                    ? ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+                    : $scope->getScopeType(),
+                scopeId: $singleStoreMode
+                    ? Store::DEFAULT_STORE_ID
+                    : $scope?->getScopeId() ?? Store::DEFAULT_STORE_ID,
+            );
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function removeOldAuthKeys(): void
+    {
+        /** @var ConfigWriter $configWriter */
+        $configWriter = $this->objectManager->get(ConfigWriter::class);
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $this->objectManager->create(StoreManagerInterface::class);
+        foreach ($storeManager->getWebsites() as $website) {
+            $configWriter->delete(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_JS_API_KEY,
+                scope: ScopeInterface::SCOPE_WEBSITES,
+                scopeId: $website->getId(),
+            );
+            $configWriter->delete(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_REST_API_KEY,
+                scope: ScopeInterface::SCOPE_WEBSITES,
+                scopeId: $website->getId(),
+            );
+        }
+        foreach ($storeManager->getStores() as $store) {
+            $configWriter->delete(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_JS_API_KEY,
+                scope: ScopeInterface::SCOPE_STORES,
+                scopeId: $store->getId(),
+            );
+            $configWriter->delete(
+                path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_REST_API_KEY,
+                scope: ScopeInterface::SCOPE_STORES,
+                scopeId: $store->getId(),
+            );
+        }
     }
 
     /**

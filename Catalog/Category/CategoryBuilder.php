@@ -262,6 +262,19 @@ class CategoryBuilder
     }
 
     /**
+     * @param string $displayMode
+     *
+     * @return CategoryBuilder
+     */
+    public function withDisplayMode(string $displayMode): CategoryBuilder
+    {
+        $builder = clone $this;
+        $builder->category->setData('display_mode', $displayMode);
+
+        return $builder;
+    }
+
+    /**
      * @param int $storeId
      *
      * @return CategoryBuilder
