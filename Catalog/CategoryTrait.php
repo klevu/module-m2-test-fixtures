@@ -14,9 +14,9 @@ use TddWizard\Fixtures\Catalog\CategoryFixturePool;
 trait CategoryTrait
 {
     /**
-     * @var CategoryFixturePool
+     * @var CategoryFixturePool|null
      */
-    private CategoryFixturePool $categoryFixturePool;
+    private ?CategoryFixturePool $categoryFixturePool = null;
 
     /**
      * Example usage setting store level data
@@ -63,6 +63,9 @@ trait CategoryTrait
         }
         if (isset($categoryData['is_anchor'])) {
             $categoryBuilder = $categoryBuilder->withIsAnchor($categoryData['is_anchor']);
+        }
+        if (isset($categoryData['display_mode'])) {
+            $categoryBuilder = $categoryBuilder->withDisplayMode($categoryData['display_mode']);
         }
         if (!empty($categoryData['products'])) {
             $categoryBuilder = $categoryBuilder->withProducts($categoryData['products']);

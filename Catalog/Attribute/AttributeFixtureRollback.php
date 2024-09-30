@@ -67,7 +67,7 @@ class AttributeFixtureRollback
                     $attributeFixture->getAttributeId(),
                 );
             } catch (\Exception) {
-                // this is fine, attribute has already been removedZ
+                // this is fine, attribute has already been removed
             }
         }
 
