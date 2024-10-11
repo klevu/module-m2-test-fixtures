@@ -46,6 +46,7 @@ trait AttributeTrait
             $attributeBuilder = AttributeBuilder::aCategoryAttribute(
                 attributeCode: $attributeData['code'],
                 attributeType: $attributeData['attribute_type'],
+                attributeData: $attributeData,
             );
         } else {
             $attributeBuilder = match ($attributeData['attribute_type'] ?? null) {

@@ -25,6 +25,7 @@ use Magento\Eav\Api\Data\AttributeOptionInterface;
 use Magento\Eav\Api\Data\AttributeOptionInterfaceFactory;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Model\Entity\Attribute;
+use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -395,7 +396,7 @@ class AttributeBuilder
                     groupId: 'General',
                     attributeId: $attribute->getId(),
                 );
-                if ($attribute->getOptions()) {
+                if ($attribute->getOptions() && ($attribute->getSourceModel() !== Boolean::class)) {
                     $objectManager = Bootstrap::getObjectManager();
                     $optionManagement = $objectManager->create(OptionManagement::class);
                     foreach ($attribute->getOptions() as $option) {
@@ -476,6 +477,11 @@ class AttributeBuilder
             case ('multiselect'):
                 $builder->attribute->setFrontendInput('multiselect');
                 $builder->attribute->setBackendType('text');
+                break;
+            case ('yes_no'):
+                $builder->attribute->setFrontendInput('boolean');
+                $builder->attribute->setBackendType('int');
+                $builder->attribute->setSourceModel(Boolean::class);
                 break;
             case ('price'):
                 $builder->attribute->setFrontendInput('price');
