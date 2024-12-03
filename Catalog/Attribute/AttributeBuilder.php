@@ -389,6 +389,7 @@ class AttributeBuilder
     {
         try {
             $attribute = $this->createAttribute();
+            $attribute->setOrigData(key: null, data: $attribute->getData());
             if ($attribute instanceof ProductAttributeInterface) {
                 $this->eavSetup->addAttributeToGroup(
                     entityType: ProductAttributeInterface::ENTITY_TYPE_CODE,
