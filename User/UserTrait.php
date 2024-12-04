@@ -18,7 +18,7 @@ trait UserTrait
     /**
      * @var UserFixturesPool|null
      */
-    private ?UserFixturesPool $userFixturesPool;
+    private ?UserFixturesPool $userFixturesPool = null;
 
     /**
      * @param string[]|null $userData
