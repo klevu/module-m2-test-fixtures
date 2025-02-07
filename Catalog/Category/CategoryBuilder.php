@@ -8,7 +8,10 @@ declare(strict_types=1);
 
 namespace Klevu\TestFixtures\Catalog\Category;
 
+// phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
+
 use Magento\Catalog\Api\CategoryLinkRepositoryInterface;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\Data\CategoryProductLinkInterfaceFactory;
 use Magento\Catalog\Model\Category;
@@ -389,6 +392,9 @@ class CategoryBuilder
             $storeCategory->addData($values);
             $builder->categoryResource->save($storeCategory);
         }
+        if ($builder->storeSpecificValues) {
+            $this->clearCategoryRepositoryCache();
+        }
 
         return $builder->category;
     }
@@ -399,5 +405,15 @@ class CategoryBuilder
     public function __clone(): void
     {
         $this->category = clone $this->category;
+    }
+
+    /**
+     * @return void
+     */
+    private function clearCategoryRepositoryCache(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        $categoryRepository = $objectManager->get(CategoryRepositoryInterface::class);
+        $categoryRepository->_resetState();
     }
 }
