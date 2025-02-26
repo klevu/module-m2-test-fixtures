@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace Klevu\TestFixtures\Store;
 
+use Klevu\Configuration\Service\Provider\ScopeProviderInterface;
 use Klevu\TestFixtures\Exception\InvalidModelException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\ResourceModel\Store as StoreResourceModel;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -27,17 +29,24 @@ class StoreFixtureRollback
      * @var StoreRepositoryInterface
      */
     private StoreRepositoryInterface $storeRepository;
+    /**
+     * @var ScopeProviderInterface
+     */
+    private ScopeProviderInterface $scopeProvider;
 
     /**
      * @param Registry $registry
      * @param StoreRepositoryInterface $storeRepository
+     * @param ScopeProviderInterface $scopeProvider
      */
     public function __construct(
         Registry $registry,
         StoreRepositoryInterface $storeRepository,
+        ScopeProviderInterface $scopeProvider,
     ) {
         $this->registry = $registry;
         $this->storeRepository = $storeRepository;
+        $this->scopeProvider = $scopeProvider;
     }
 
     /**
@@ -50,6 +59,7 @@ class StoreFixtureRollback
         return new self(
             $objectManager->get(Registry::class),
             $objectManager->get(StoreRepositoryInterface::class),
+            $objectManager->get(ScopeProviderInterface::class),
         );
     }
 
@@ -90,6 +100,13 @@ class StoreFixtureRollback
                     );
                 }
                 $storeResourceModel->delete($store);
+                $scope = $this->scopeProvider->getCurrentScope();
+                if (
+                    $scope->getScopeObject() instanceof StoreInterface
+                    && $scope->getScopeId() === $storeFixture->getId()
+                ) {
+                    $this->scopeProvider->unsetCurrentScope();
+                }
             } catch (NoSuchEntityException) { // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
                 // store has already been removed
             }

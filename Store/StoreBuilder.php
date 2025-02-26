@@ -246,6 +246,42 @@ class StoreBuilder
                         name: $sequenceTableName,
                     ),
                 );
+                $connection->insertOnDuplicate(
+                    table: $this->resourceConnection->getTableName(
+                        modelEntity: 'sales_sequence_meta',
+                    ),
+                    data: [
+                        'entity_type' => $entityType,
+                        'store_id' => $store->getId(),
+                        'sequence_table' => $sequenceTableName,
+                    ],
+                    fields: [],
+                );
+                $select = $connection->select()
+                    ->from(
+                        name: $this->resourceConnection->getTableName(
+                            modelEntity: 'sales_sequence_meta',
+                        ),
+                        cols: ['meta_id'],
+                    )->where(
+                        cond: 'store_id = ?',
+                        value: $store->getId(),
+                    )->where(
+                        cond: 'sequence_table = ?',
+                        value: $sequenceTableName,
+                    );
+                $result = $connection->fetchRow($select);
+
+                $connection->insertOnDuplicate(
+                    table: $this->resourceConnection->getTableName(
+                        modelEntity: 'sales_sequence_profile',
+                    ),
+                    data: [
+                        'meta_id' => $result['meta_id'],
+                        'is_active' => 1,
+                    ],
+                    fields: [],
+                );
             }
         }
     }
