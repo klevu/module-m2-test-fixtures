@@ -11,11 +11,11 @@ namespace Klevu\TestFixtures\Traits;
 trait GeneratorTrait
 {
     /**
-     * @param mixed[] $yieldValues
+     * @param mixed[]|\Iterator $yieldValues
      *
      * @return \Generator
      */
-    private function generate(array $yieldValues): \Generator
+    private function generate(array|\Iterator $yieldValues): \Generator
     {
         foreach ($yieldValues as $key => $value) {
             yield $key => $value;
