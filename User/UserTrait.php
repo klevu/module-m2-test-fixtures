@@ -52,7 +52,7 @@ trait UserTrait
         }
         $this->userFixturesPool->add(
             $userBuilder->build(),
-            $storeData['key'] ?? 'test_user',
+            $userData['key'] ?? 'test_user',
         );
     }
 

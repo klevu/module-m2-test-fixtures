@@ -110,6 +110,18 @@ trait SetAuthKeysTrait
                 scopeId: $store->getId(),
             );
         }
+
+        $configWriter->delete(
+            path: ApiKeyProvider::CONFIG_XML_PATH_JS_API_KEY,
+            scope: ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            scopeId: 0,
+        );
+        $configWriter->delete(
+            path: AuthKeyProvider::CONFIG_XML_PATH_REST_AUTH_KEY,
+            scope: ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            scopeId: 0,
+        );
+
         $this->clearConfigCache();
     }
 
@@ -200,6 +212,19 @@ trait SetAuthKeysTrait
                 scopeId: $store->getId(),
             );
         }
+
+        $configWriter->delete(
+            path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_JS_API_KEY,
+            scope: ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            scopeId: 0,
+        );
+        $configWriter->delete(
+            path: OldAuthKeysCollectionProvider::CONFIG_XML_PATH_KLEVU_AUTH_KEYS
+                . '/' . OldAuthKeysCollectionProvider::XML_FIELD_REST_API_KEY,
+            scope: ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            scopeId: 0,
+        );
     }
 
     /**
