@@ -431,10 +431,13 @@ class AttributeBuilder
 
         $entityType = $builder->attribute->getData('entity_type');
 
-        $attribute = $this->eavConfig->getAttribute(
-            entityType: $entityType,
-            code: $builder->attribute->getAttributeCode(),
-        );
+        $existingAttributeCode = $builder->attribute->getAttributeCode();
+        $attribute = null !== $existingAttributeCode
+            ? $this->eavConfig->getAttribute(
+                entityType: $entityType,
+                code: $existingAttributeCode,
+            )
+            : null;
         if ($attribute?->getId()) {
             return $attribute;
         }
