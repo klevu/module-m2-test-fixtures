@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Klevu\TestFixtures\Tax;
 
 use Klevu\TestFixtures\Exception\IndexingFailed;
+use Magento\Framework\DataObject;
 use Magento\Tax\Api\Data\TaxRuleInterface;
 use Magento\Tax\Api\TaxRuleRepositoryInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
@@ -175,12 +176,12 @@ class TaxRuleBuilder
         if (!$builder->taxRule->getCode()) {
             $builder->taxRule->setCode(code: 'klevu_test_tax_code');
         }
-        if (!$builder->taxRule->getCustomerTaxClassIds()) {
+        if (!$this->getTaxClassIds(taxRule: $builder->taxRule, type: 'customer')) {
             $builder->taxRule->setCustomerTaxClassIds(
                 customerTaxClassIds: [$this->getDefaultCustomerTaxClassId(storeId: $storeId)],
             );
         }
-        if (!$builder->taxRule->getProductTaxClassIds()) {
+        if (!$this->getTaxClassIds(taxRule: $builder->taxRule, type: 'product')) {
             $builder->taxRule->setProductTaxClassIds(
                 productTaxClassIds: [$this->getDefaultProductTaxClassId()],
             );
@@ -193,6 +194,26 @@ class TaxRuleBuilder
         }
 
         return $builder;
+    }
+
+    /**
+     * For an unsaved rule, Magento's tax class getters look up calculations by a null rule id,
+     * which uses null as an array offset (deprecated in PHP 8.5) and can only return an empty list.
+     *
+     * @param TaxRuleInterface $taxRule
+     * @param string $type 'customer' or 'product'
+     *
+     * @return int[]|null
+     */
+    private function getTaxClassIds(TaxRuleInterface $taxRule, string $type): ?array
+    {
+        if (!$taxRule->getId() && $taxRule instanceof DataObject) {
+            return $taxRule->getData($type . '_tax_class_ids');
+        }
+
+        return 'customer' === $type
+            ? $taxRule->getCustomerTaxClassIds()
+            : $taxRule->getProductTaxClassIds();
     }
 
     /**
